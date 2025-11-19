@@ -1,0 +1,99 @@
+services:
+  lead_ext_db:
+    image: postgres:13-alpine
+    container_name: lead_ext_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${PG_PASSWORD:-postgres}
+      POSTGRES_DB: ${PG_DATABASE:-lead_ext_development}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - lead_ext_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: lead_ext_redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
+    networks:
+      - lead_ext_net
+
+  lead_ext:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: lead_ext
+    command: bash scripts/start.sh
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DATABASE_HOST: lead_ext_db
+      RAILS_ENV: development
+    depends_on:
+      lead_ext_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - gem_cache:/usr/local/bundle
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+    networks:
+      - lead_ext_net
+
+  sidekiq:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: lead_ext_sidekiq
+    command: bundle exec sidekiq
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      DATABASE_HOST: lead_ext_db
+      RAILS_ENV: development
+    depends_on:
+      lead_ext_db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      lead_ext:
+        condition: service_started
+    volumes:
+      - .:/app
+      - gem_cache:/usr/local/bundle
+    env_file:
+      - .env
+    networks:
+      - lead_ext_net
+
+volumes:
+  postgres_data:
+  redis_data:
+  gem_cache:
+
+networks:
+  lead_ext_net:
