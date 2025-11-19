@@ -11,7 +11,14 @@ Style/FrozenStringLiteralComment:
   EnforcedStyle: always
   AutoCorrect: true
   Exclude:
-    - "**/*.arb"
+    - "config/**/*"
+    - "db/migrate/**/*"
+    - "db/schema.rb"
+    - "spec/**/*"
+    - "Rakefile"
+    - "Gemfile"
+    - "config.ru"
+    - "bin/**/*"
     - "**/*.erb"
 
 Layout/IndentationWidth:
