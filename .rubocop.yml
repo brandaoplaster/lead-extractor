@@ -37,9 +37,12 @@ Layout/FirstHashElementIndentation:
   Enabled: true
   EnforcedStyle: consistent
 
+Layout/EmptyLineAfterMagicComment:
+  Enabled: true
+
 Layout/MultilineMethodCallIndentation:
   Enabled: true
-  EnforcedStyle: aligned
+  EnforcedStyle: indented
 
 Layout/LineLength:
   Exclude:
