@@ -48,7 +48,7 @@ group :development, :test do
 
   gem "factory_bot_rails", "~> 6.4"
   gem "faker", "~> 3.5"
-  gem "rspec-rails", "~> 7.1"
+  gem "rspec-rails", "~> 8.0"
   gem "shoulda-matchers", "~> 6.4"
   gem "simplecov", "~> 0.22.0", require: false
   gem "ruby-lsp", "~> 0.22"
