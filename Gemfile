@@ -51,7 +51,7 @@ group :development, :test do
   gem "rspec-rails", "~> 7.1"
   gem "shoulda-matchers", "~> 6.4"
   gem "simplecov", "~> 0.22.0", require: false
-  gem "ruby-lsp", "~> 0.22"
+  gem "ruby-lsp", "~> 0.26"
   gem "rubocop", "~> 1.69"
 end
 
